@@ -71,32 +71,76 @@ The workflow refuses a tag that doesn't match `libVersion`, and refuses to repub
 
 ## Seasons and branches
 
-`main` is the newest season. When the next season starts, the previous one moves to a branch named after
-its year, so both can still be released:
+`main` is always the newest season. Every year, before starting on the new season, the current state of
+`main` is archived as a branch named after its year. `main` then moves on to the new season:
 
 ```
 main   frcYear=2027   tags v2027.0.0-beta.1, v2027.1.0, ...   -> ViBotsLib-frc2027-latest.json
 2026   frcYear=2026   tags v2026.1.3, ...                     -> ViBotsLib-frc2026-latest.json
+2025   frcYear=2025   (archived, still releasable)            -> ViBotsLib-frc2025-latest.json
 ```
 
-A late 2026 fix goes on the `2026` branch (cherry-pick it from main, or commit it there) and is tagged
-there. Nothing on main gets reverted. Both seasons publish into the same GitHub Pages site side by side.
-CI and the daily Phoenix check cover `main` and every branch named like `2026`, each against its own
-season's Phoenix.
+- A late fix for an old season goes on that season's branch and is tagged there. Cherry-pick it from main
+  or commit it directly. Nothing on `main` gets reverted.
+- CI and the daily Phoenix check cover `main` and every branch named like `2026`. Each is checked against
+  its own season's Phoenix.
+- Season branches are never merged back into `main`. Cherry-pick individual fixes across instead.
 
-### New season
+### Yearly update (archive the season, start the next)
 
 The Phoenix check opens a "Phoenix 6 for 2027 is available" issue when CTRE publishes next season (often a
-beta in the fall). Then:
+beta in the fall). Then, in this order:
 
-1. `git branch 2026 main && git push origin 2026` - keeps 2026 releasable.
-2. On `main`, in `gradle.properties`: `frcYear`, `wpilibVersion`, `phoenixVersion`, and `libVersion`
-   (`2027.0.0-beta.1` while WPILib/Phoenix are in beta, `2027.1.0` for the kickoff release).
-3. Update the Gradle wrapper and Java version to match the new WPILib project template.
-4. Fix what breaks. Season changes can move hardware paths: check `LogCleanup` (`/home/lvuser/logs`),
-   `RobotStartup` (USB at `/u`) and `NetworkLatencyMonitor` (`10.TE.AM.x` addresses) against the new
-   control system.
-5. Tag a release from `main`.
+1. **Archive the current season.** Make sure everything for the current season is merged to `main`, then:
+   ```
+   git checkout main && git pull
+   git branch 2026 && git push origin 2026
+   ```
+   The `2026` branch is now the permanent home for the 2026 season and stays releasable.
+2. **Move `main` to the new season.** In `gradle.properties` set `frcYear=2027`, the 2027 `wpilibVersion`
+   and `phoenixVersion`, and `libVersion` (`2027.0.0-beta.1` while WPILib/Phoenix are in beta,
+   `2027.1.0` for the kickoff release).
+3. **Match the new WPILib project template:** the Gradle wrapper version, and the Java version if it changed.
+4. **Fix what breaks.** Season changes can move hardware paths. Check these against the new control system:
+   - `LogCleanup`: `/home/lvuser/logs`
+   - `RobotStartup`: USB stick at `/u`
+   - `NetworkLatencyMonitor`: `10.TE.AM.x` addresses
+5. **Release from `main`:** commit, then tag (e.g. `v2027.0.0-beta.1`) and push the tag.
+6. **Close the "Phoenix 6 for 2027 is available" issue.** It won't be reopened.
+7. **Share the new URLs** with the team: robot projects for 2027 install from the `frc2027` JSONs.
+8. **Workflow fixes later:** if `.github/workflows/` changes on `main` afterward, cherry-pick the change to
+   any season branch you still release from. A tag runs the workflow files from its own branch. The daily
+   Phoenix check always runs from `main`, and it already covers every season branch.
+
+## Published files (Maven repo + vendordeps)
+
+Releases are published to the `gh-pages` branch, served at `https://5167vibots.github.io/ViBotsLib/`. It
+holds every release from every season, organized by version, not by source branch:
+
+```
+gh-pages
+|-- repo/com/vibots5167/vibotslib-java/
+|   |-- 2026.1.0/          <- released from main in 2026
+|   |-- 2026.1.3/          <- released from the 2026 branch later
+|   |-- 2027.1.0/          <- released from main
+|   `-- maven-metadata.xml
+|-- repo/com/vibots5167/vibotslib-ctre-java/  (same layout)
+|-- ViBotsLib-frc2026-latest.json        (+ ViBotsLib-CTRE-frc2026-latest.json)
+`-- ViBotsLib-frc2027-latest.json        (+ ViBotsLib-CTRE-frc2027-latest.json)
+```
+
+- Creating, archiving or deleting source branches never touches `gh-pages`. A release only adds its own
+  version folders and updates its own season's JSONs.
+- Robot projects pin an exact version and their season's JSON URL. Which branch a release came from doesn't
+  matter to them, and a new season's release never shows up as an update for an old season's robot.
+- Version numbers must be unique across all branches. The year prefix takes care of that, and the release
+  workflow refuses to republish an existing version.
+- Two releases at once (e.g. a 2026 patch and a 2027 release) are safe. The release workflow runs one at a
+  time, and the second starts from what the first published.
+- `maven-metadata.xml` lists the most recently released version as "latest", even if that's an older
+  season's patch. Vendordeps always use exact versions, so this is cosmetic.
+- **Never rewrite, force-push or delete files on `gh-pages`.** If a version folder disappears, every robot
+  project pinned to that version stops building, including old seasons' code.
 
 ## GitHub Actions
 
