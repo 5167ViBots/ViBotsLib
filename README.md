@@ -29,8 +29,11 @@ Team 5167's reusable robot code, packaged as two WPILib vendordeps:
 
 VS Code: *WPILib: Manage Vendor Libraries* → *Install new library (online)* → paste one of:
 
-- `https://5167vibots.github.io/ViBotsLib/ViBotsLib.json`
-- `https://5167vibots.github.io/ViBotsLib/ViBotsLib-CTRE.json` (CTRE robots; install Phoenix 6 first)
+- `https://5167vibots.github.io/ViBotsLib/ViBotsLib-frc2026-latest.json`
+- `https://5167vibots.github.io/ViBotsLib/ViBotsLib-CTRE-frc2026-latest.json` (CTRE robots; install Phoenix 6 first)
+
+Use the year of the robot project's season. Each season has its own URL, so a new season's release never
+shows up as an update in last season's robot code.
 
 ```java
 // Robot constructor / robotInit - first thing
@@ -59,33 +62,56 @@ lists them. Edit vendordep JSONs in `vendordep-templates/`. `@version@` and `@fr
 
 ## Releasing
 
-1. Bump `libVersion` in `gradle.properties` and commit to `main`.
-2. Tag and push: `git tag v2026.1.1 && git push origin v2026.1.1`.
+1. Bump `libVersion` in `gradle.properties` and commit, on `main` or a season branch (see below).
+2. Tag that commit and push: `git tag v2026.1.1 && git push origin v2026.1.1`.
 3. The **Release** workflow builds, tests, and adds the version to the `gh-pages` branch. Older versions
    stay, because robot projects pin exact versions. Robot projects see it via *Check for updates*.
 
 The workflow refuses a tag that doesn't match `libVersion`, and refuses to republish an existing version.
 
+## Seasons and branches
+
+`main` is the newest season. When the next season starts, the previous one moves to a branch named after
+its year, so both can still be released:
+
+```
+main   frcYear=2027   tags v2027.0.0-beta.1, v2027.1.0, ...   -> ViBotsLib-frc2027-latest.json
+2026   frcYear=2026   tags v2026.1.3, ...                     -> ViBotsLib-frc2026-latest.json
+```
+
+A late 2026 fix goes on the `2026` branch (cherry-pick it from main, or commit it there) and is tagged
+there. Nothing on main gets reverted. Both seasons publish into the same GitHub Pages site side by side.
+CI and the daily Phoenix check cover `main` and every branch named like `2026`, each against its own
+season's Phoenix.
+
+### New season
+
+The Phoenix check opens a "Phoenix 6 for 2027 is available" issue when CTRE publishes next season (often a
+beta in the fall). Then:
+
+1. `git branch 2026 main && git push origin 2026` - keeps 2026 releasable.
+2. On `main`, in `gradle.properties`: `frcYear`, `wpilibVersion`, `phoenixVersion`, and `libVersion`
+   (`2027.0.0-beta.1` while WPILib/Phoenix are in beta, `2027.1.0` for the kickoff release).
+3. Update the Gradle wrapper and Java version to match the new WPILib project template.
+4. Fix what breaks. Season changes can move hardware paths: check `LogCleanup` (`/home/lvuser/logs`),
+   `RobotStartup` (USB at `/u`) and `NetworkLatencyMonitor` (`10.TE.AM.x` addresses) against the new
+   control system.
+5. Tag a release from `main`.
+
 ## GitHub Actions
 
 | Workflow | When | What |
 |---|---|---|
-| CI | push to main, pull requests | `./gradlew build` |
+| CI | push to main or a season branch, pull requests | `./gradlew build` |
 | Release | `v*` tag | publishes to GitHub Pages |
-| Phoenix compatibility | daily, or manually | builds ViBotsLib-CTRE against the newest Phoenix 6. Opens an issue if it fails. |
+| Phoenix compatibility | daily, or manually | builds ViBotsLib-CTRE on each season branch against that season's newest Phoenix 6. Opens an issue if it fails, and a one-time issue when next season's Phoenix appears. |
 
 GitHub pauses scheduled workflows after 60 days with no commits (e.g. over summer). Re-enable it in the
 Actions tab at kickoff.
-
-## New season checklist
-
-1. `frcYear`, `wpilibVersion`, `phoenixVersion` and `libVersion` (e.g. `2027.1.0`) in `gradle.properties`.
-2. The `uuid` in the CTRE template's `requires` entry, if CTRE changed Phoenix 6's vendordep UUID.
-3. The Gradle wrapper version, to match the new WPILib project template.
 
 ## First-time GitHub setup
 
 1. Create `5167ViBots/ViBotsLib` (**public**: robot builds download without logging in), and push `main`.
 2. Push the first tag (`v2026.1.0`). The Release workflow creates the `gh-pages` branch.
 3. Repo *Settings → Pages*: Source = *Deploy from a branch*, branch `gh-pages`, folder `/ (root)`.
-4. Check `https://5167vibots.github.io/ViBotsLib/ViBotsLib.json` loads.
+4. Check `https://5167vibots.github.io/ViBotsLib/ViBotsLib-frc2026-latest.json` loads.

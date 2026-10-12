@@ -1,6 +1,10 @@
 import org.apache.tools.ant.filters.ReplaceTokens
 import org.gradle.internal.os.OperatingSystem
 
+plugins {
+    id 'base'   // root 'clean' deletes build/ (site + vendordeps)
+}
+
 // WPILib's offline maven from the installer - GradleRIO robot projects read it without internet.
 def wpilibHome = OperatingSystem.current().isWindows()
     ? new File(System.getenv('PUBLIC') ?: 'C:/Users/Public', "wpilib/$frcYear")
@@ -70,13 +74,17 @@ subprojects {
     }
 }
 
-// Vendordep JSONs with the release version filled in.
-tasks.register('vendordeps', Copy) {
+// Vendordep JSONs with the release version filled in, named per season (ViBotsLib-frc2026-latest.json)
+// so a new season's release never replaces the file last season's robots check for updates.
+// The "fileName" inside stays ViBotsLib.json - that's what lands in a robot's vendordeps/ folder.
+tasks.register('vendordeps', Sync) {
     from 'vendordep-templates'
     include '*.json'
     into layout.buildDirectory.dir('vendordeps')
+    rename { it.replace('.json', "-frc$frcYear-latest.json") }
     filter(ReplaceTokens, tokens: [version: libVersion, frcYear: frcYear])
     inputs.property('version', libVersion)
+    inputs.property('frcYear', frcYear)
 }
 
 tasks.register('site') {

@@ -7,7 +7,7 @@
   "mavenUrls": [
     "https://5167vibots.github.io/ViBotsLib/repo"
   ],
-  "jsonUrl": "https://5167vibots.github.io/ViBotsLib/ViBotsLib.json",
+  "jsonUrl": "https://5167vibots.github.io/ViBotsLib/ViBotsLib-frc@frcYear@-latest.json",
   "javaDependencies": [
     {
       "groupId": "com.vibots5167",
