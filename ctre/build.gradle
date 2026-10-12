@@ -1,0 +1,10 @@
+// CTRE extras: requires Phoenix 6 in the robot project (enforced by the vendordep's "requires").
+publishing.publications.java.artifactId = 'vibotslib-ctre-java'
+
+dependencies {
+    api project(':core')
+
+    // Not transitive - the robot's Phoenix 6 vendordep picks the version.
+    compileOnly "com.ctre.phoenix6:wpiapi-java:$phoenixVersion"
+    testImplementation "com.ctre.phoenix6:wpiapi-java:$phoenixVersion"
+}

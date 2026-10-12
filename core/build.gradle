@@ -1,0 +1,2 @@
+// Core library: WPILib only, no vendor dependencies.
+publishing.publications.java.artifactId = 'vibotslib-java'

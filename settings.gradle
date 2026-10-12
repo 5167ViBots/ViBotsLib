@@ -1,0 +1,3 @@
+rootProject.name = 'ViBotsLib'
+
+include 'core', 'ctre'

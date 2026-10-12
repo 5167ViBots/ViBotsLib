@@ -1,0 +1,73 @@
+# Daily: build ViBotsLib-CTRE against the newest Phoenix 6 release, and open an issue if it breaks.
+# Note: GitHub pauses scheduled workflows after 60 days without commits - re-enable in the Actions tab.
+name: Phoenix compatibility
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Find latest Phoenix 6
+        id: phx
+        run: |
+          year=$(grep '^frcYear=' gradle.properties | cut -d= -f2)
+          url="https://maven.ctr-electronics.com/release/com/ctre/phoenix6/latest/Phoenix6-frc$year-latest.json"
+          v=$(curl -fsSL "$url" | jq -r .version)
+          echo "Latest Phoenix 6 for $year: $v"
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+
+      - name: Skip if already tested
+        id: seen
+        uses: actions/cache/restore@v4
+        with:
+          path: .phoenix-tested
+          key: phoenix-tested-${{ steps.phx.outputs.version }}
+
+      - uses: actions/setup-java@v4
+        if: steps.seen.outputs.cache-hit != 'true'
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build and test against it
+        if: steps.seen.outputs.cache-hit != 'true'
+        run: |
+          chmod +x gradlew
+          ./gradlew build -PphoenixVersion=${{ steps.phx.outputs.version }}
+
+      - name: Remember this version passed
+        if: steps.seen.outputs.cache-hit != 'true'
+        run: echo "${{ steps.phx.outputs.version }}" > .phoenix-tested
+
+      - uses: actions/cache/save@v4
+        if: steps.seen.outputs.cache-hit != 'true'
+        with:
+          path: .phoenix-tested
+          key: phoenix-tested-${{ steps.phx.outputs.version }}
+
+      - name: Open an issue
+        if: failure() && steps.phx.outputs.version != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: ${{ steps.phx.outputs.version }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          title="ViBotsLib-CTRE fails against Phoenix $VERSION"
+          if gh issue list --state open --search "\"$title\" in:title" --json number --jq 'length' | grep -qv '^0$'; then
+            echo "Issue already open"
+          else
+            gh issue create --title "$title" --body "Building against Phoenix 6 $VERSION failed: $RUN_URL
+
+          Robot projects that update Phoenix to $VERSION may crash with NoSuchMethodError / NoClassDefFoundError
+          in ViBotsLib-CTRE code. Fix the build, bump libVersion and release."
+          fi

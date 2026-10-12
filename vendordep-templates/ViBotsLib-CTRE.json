@@ -1,0 +1,20 @@
+{
+  "fileName": "ViBotsLib-CTRE.json",
+  "name": "ViBotsLib-CTRE",
+  "version": "@version@",
+  "uuid": "028742ff-68ac-4166-825b-6c6963ed1276",
+  "frcYear": "@frcYear@",
+  "mavenUrls": [
+    "https://5167vibots.github.io/ViBotsLib/repo"
+  ],
+  "jsonUrl": "https://5167vibots.github.io/ViBotsLib/ViBotsLib-CTRE.json",
+  "javaDependencies": [
+    {
+      "groupId": "com.vibots5167",
+      "artifactId": "vibotslib-ctre-java",
+      "version": "@version@"
+    }
+  ],
+  "jniDependencies": [],
+  "cppDependencies": []
+}

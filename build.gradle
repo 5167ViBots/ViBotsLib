@@ -1,0 +1,109 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+import org.gradle.internal.os.OperatingSystem
+
+// WPILib's offline maven from the installer - GradleRIO robot projects read it without internet.
+def wpilibHome = OperatingSystem.current().isWindows()
+    ? new File(System.getenv('PUBLIC') ?: 'C:/Users/Public', "wpilib/$frcYear")
+    : new File(System.getProperty('user.home'), "wpilib/$frcYear")
+def siteDir = layout.buildDirectory.dir('site')
+
+subprojects {
+    apply plugin: 'java-library'
+    apply plugin: 'maven-publish'
+
+    group = 'com.vibots5167'
+    version = libVersion
+
+    java {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        withSourcesJar()
+        withJavadocJar()
+    }
+
+    repositories {
+        maven { url 'https://frcmaven.wpi.edu/artifactory/release/' }
+        maven { url 'https://maven.ctr-electronics.com/release/' }
+        maven { url new File(wpilibHome, 'maven') }
+        mavenCentral()
+    }
+
+    // WPILib comes from the robot project, so it is compileOnly and never a transitive dependency.
+    dependencies {
+        def wpilib = [
+            "edu.wpi.first.wpilibj:wpilibj-java:$wpilibVersion",
+            "edu.wpi.first.wpilibNewCommands:wpilibNewCommands-java:$wpilibVersion",
+            "edu.wpi.first.wpimath:wpimath-java:$wpilibVersion",
+            "edu.wpi.first.wpiutil:wpiutil-java:$wpilibVersion",
+            "edu.wpi.first.wpiunits:wpiunits-java:$wpilibVersion",
+            "edu.wpi.first.ntcore:ntcore-java:$wpilibVersion",
+            "edu.wpi.first.hal:hal-java:$wpilibVersion",
+        ]
+        wpilib.each {
+            compileOnly it
+            testImplementation it
+        }
+        testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+        testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    }
+
+    tasks.withType(Javadoc) {
+        options.addStringOption('Xdoclint:none', '-quiet')
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    publishing {
+        publications {
+            java(MavenPublication) {
+                from components.java   // artifactId is set in each subproject's build.gradle
+            }
+        }
+        repositories {
+            // GitHub Pages site, deployed by .github/workflows/release.yml
+            maven { name = 'site'; url = siteDir.map { it.dir('repo') } }
+            // this computer's WPILib install, for offline use
+            maven { name = 'wpilibHome'; url = new File(wpilibHome, 'maven') }
+        }
+    }
+}
+
+// Vendordep JSONs with the release version filled in.
+tasks.register('vendordeps', Copy) {
+    from 'vendordep-templates'
+    include '*.json'
+    into layout.buildDirectory.dir('vendordeps')
+    filter(ReplaceTokens, tokens: [version: libVersion, frcYear: frcYear])
+    inputs.property('version', libVersion)
+}
+
+tasks.register('site') {
+    group = 'publishing'
+    description = 'Builds the GitHub Pages site (maven repo + vendordep JSONs) in build/site.'
+    dependsOn subprojects*.tasks*.named('build')
+    dependsOn subprojects*.tasks*.named('publishAllPublicationsToSiteRepository')
+    dependsOn 'vendordeps'
+    doLast {
+        copy {
+            from layout.buildDirectory.dir('vendordeps')
+            into siteDir
+        }
+        println "Site ready: ${siteDir.get().asFile}"
+    }
+}
+
+tasks.register('installLocal') {
+    group = 'publishing'
+    description = "Installs into this computer's WPILib folder (maven + offline vendordeps), no GitHub needed."
+    dependsOn subprojects*.tasks*.named('publishAllPublicationsToWpilibHomeRepository')
+    dependsOn 'vendordeps'
+    doLast {
+        copy {
+            from layout.buildDirectory.dir('vendordeps')
+            into new File(wpilibHome, 'vendordeps')
+        }
+        println "Installed $libVersion into $wpilibHome - use 'Install new libraries (offline)' in VS Code."
+    }
+}
