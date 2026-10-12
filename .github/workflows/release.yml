@@ -62,3 +62,36 @@ jobs:
           keep_files: true
           enable_jekyll: false
           commit_message: Release ${{ github.ref_name }}
+
+      # Attach the jars and vendordep JSONs to the tag's GitHub Release (for browsing / manual download -
+      # robot projects still install through the vendordep URL).
+      # - Release created on github.com (Releases -> Draft a new release): files are added, its title and
+      #   notes are left alone.
+      # - Tag pushed from git / VS Code / GitHub Desktop: the Release is created here, with install URLs and
+      #   generated notes. Versions with a "-" (2027.0.0-beta.1) are marked as pre-releases.
+      - name: Attach files to GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(grep '^libVersion=' gradle.properties | cut -d= -f2)
+          year=$(grep '^frcYear=' gradle.properties | cut -d= -f2)
+          files=()
+          for lib in vibotslib-java vibotslib-ctre-java; do
+            for suffix in "" -sources -javadoc; do
+              files+=("build/site/repo/com/vibots5167/$lib/$version/$lib-$version$suffix.jar")
+            done
+          done
+          files+=("build/site/ViBotsLib-frc$year-latest.json" "build/site/ViBotsLib-CTRE-frc$year-latest.json")
+          ls -l "${files[@]}"
+
+          if gh release view "$GITHUB_REF_NAME" > /dev/null 2>&1; then
+            gh release upload "$GITHUB_REF_NAME" "${files[@]}" --clobber
+          else
+            prerelease=()
+            if [[ "$version" == *-* ]]; then prerelease=(--prerelease); fi
+            notes="Install (WPILib: Manage Vendor Libraries -> Install new library (online)):
+          - https://5167vibots.github.io/ViBotsLib/ViBotsLib-frc$year-latest.json
+          - https://5167vibots.github.io/ViBotsLib/ViBotsLib-CTRE-frc$year-latest.json (CTRE robots)"
+            gh release create "$GITHUB_REF_NAME" "${files[@]}" \
+              --title "ViBotsLib $version" --notes "$notes" --generate-notes --verify-tag "${prerelease[@]}"
+          fi

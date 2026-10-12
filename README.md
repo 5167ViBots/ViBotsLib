@@ -62,12 +62,31 @@ lists them. Edit vendordep JSONs in `vendordep-templates/`. `@version@` and `@fr
 
 ## Releasing
 
-1. Bump `libVersion` in `gradle.properties` and commit, on `main` or a season branch (see below).
-2. Tag that commit and push: `git tag v2026.1.1 && git push origin v2026.1.1`.
-3. The **Release** workflow builds, tests, and adds the version to the `gh-pages` branch. Older versions
-   stay, because robot projects pin exact versions. Robot projects see it via *Check for updates*.
+1. Bump `libVersion` in `gradle.properties`. Commit and push it, on `main` or a season branch (see below).
+2. Create a tag named `v` + that version (e.g. `v2026.1.1`) on that commit, in any one of these ways:
 
-The workflow refuses a tag that doesn't match `libVersion`, and refuses to republish an existing version.
+   | Where | How |
+   |---|---|
+   | github.com | *Releases* → *Draft a new release* → type the new tag name, pick the branch → write a title/notes → *Publish release* |
+   | Command line | `git tag v2026.1.1 && git push origin v2026.1.1` |
+   | VS Code | Command palette → *Git: Create Tag*, then *Git: Push Tags* |
+   | GitHub Desktop | *History* → right-click the commit → *Create Tag…*, then push |
+
+   A tag that only exists on your computer does nothing. It has to be pushed to GitHub.
+3. The **Release** workflow (repo *Actions* tab) then:
+   - builds and tests both libraries
+   - adds the version to the `gh-pages` branch (the Maven repo + vendordep JSONs). Older versions stay,
+     because robot projects pin exact versions. Robot projects see it via *Check for updates*.
+   - attaches the jars (plus sources/javadoc jars) and the two vendordep JSONs to the tag's GitHub Release.
+     A Release made on github.com keeps your title and notes; the files are added to it. For a tag pushed
+     from git / VS Code / Desktop, the workflow creates the Release itself, with the install URLs and notes
+     generated from the commits since the last release. Versions with a `-` (e.g. `2027.0.0-beta.1`) are
+     marked as pre-releases.
+
+The workflow stops without publishing if the tag doesn't match `libVersion`, or that version was already
+published. A tag runs the workflow file from its own commit, so workflow changes only apply to tags made
+on commits after the change. `v2026.1.0` came before files were attached to Releases, so its Release has
+none.
 
 ## Seasons and branches
 
