@@ -1,0 +1,100 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.vibots5167",
+    "module": "vibotslib-java",
+    "version": "2026.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "files": [
+        {
+          "name": "vibotslib-java-2026.1.0.jar",
+          "url": "vibotslib-java-2026.1.0.jar",
+          "size": 52010,
+          "sha512": "72bd1db2e07ccd8afa1944b795825d1858281087b37506a85ab0576716f512b67b716ff2546911f9ab4eede14e7f83d45983c7a1f4a3e5e854f8bc40ff8e7bb5",
+          "sha256": "d0f32cd67ac0b4f6363d6bcc77b2acca7bec6bc965294d1d35423e1d76022a41",
+          "sha1": "62f8fac5406b885f552e06e11a0d1062bd734f43",
+          "md5": "d70a294cbb8d6155d3c5785708d02f7a"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "vibotslib-java-2026.1.0.jar",
+          "url": "vibotslib-java-2026.1.0.jar",
+          "size": 52010,
+          "sha512": "72bd1db2e07ccd8afa1944b795825d1858281087b37506a85ab0576716f512b67b716ff2546911f9ab4eede14e7f83d45983c7a1f4a3e5e854f8bc40ff8e7bb5",
+          "sha256": "d0f32cd67ac0b4f6363d6bcc77b2acca7bec6bc965294d1d35423e1d76022a41",
+          "sha1": "62f8fac5406b885f552e06e11a0d1062bd734f43",
+          "md5": "d70a294cbb8d6155d3c5785708d02f7a"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "vibotslib-java-2026.1.0-sources.jar",
+          "url": "vibotslib-java-2026.1.0-sources.jar",
+          "size": 23751,
+          "sha512": "6e111d2a3af14cf167e6f44d8b591f5e2ba6c7bfe0aea3618ada43a33552fd5ad1d8334924493c94327edab7b7fd2f66d8957c0867dbdbdf5b88a2eff4ca491a",
+          "sha256": "afce7a29f570d933d824dc02a4b1959cea5fbd200fe9840d26dea1f422dd9e86",
+          "sha1": "71c3b47313c873c4bef725ff151bb3b9a01bb87e",
+          "md5": "73f53805e69377bf375b93cf34e8e2f8"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "vibotslib-java-2026.1.0-javadoc.jar",
+          "url": "vibotslib-java-2026.1.0-javadoc.jar",
+          "size": 162673,
+          "sha512": "11b6da42d490e076c1019295aabde0fafb51030d508410c6f49f3f6953ee6204573a46543c1e10d319b1beccd063d2ac3d8f8157b3eaa593b7cb47c7dfdea935",
+          "sha256": "a03dc0f4b780439d89428528034ee6dd2be1a3ce174c8094aa9630f4901c6587",
+          "sha1": "aaa24b72b24fc5ac5559e193994de38556e33246",
+          "md5": "48e8477590f4d7622a3a27655a46551e"
+        }
+      ]
+    }
+  ]
+}

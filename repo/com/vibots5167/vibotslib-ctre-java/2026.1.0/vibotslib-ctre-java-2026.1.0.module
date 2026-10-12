@@ -1,0 +1,118 @@
+{
+  "formatVersion": "1.1",
+  "component": {
+    "group": "com.vibots5167",
+    "module": "vibotslib-ctre-java",
+    "version": "2026.1.0",
+    "attributes": {
+      "org.gradle.status": "release"
+    }
+  },
+  "createdBy": {
+    "gradle": {
+      "version": "8.11"
+    }
+  },
+  "variants": [
+    {
+      "name": "apiElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-api"
+      },
+      "dependencies": [
+        {
+          "group": "com.vibots5167",
+          "module": "vibotslib-java",
+          "version": {
+            "requires": "2026.1.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "vibotslib-ctre-java-2026.1.0.jar",
+          "url": "vibotslib-ctre-java-2026.1.0.jar",
+          "size": 1942,
+          "sha512": "46a051f5dbe5dc418ec0767f6fe23ad45cfe26ee1988ee2328a99c7c57a71f9f3ddddc9bff8c3e290879abd46e6e40e81098de730b667dcf9f9b7eb67e689998",
+          "sha256": "6b35553bf181252b55505bd3449ddd9635350a4d8518875b53e238cb7e3de18c",
+          "sha1": "14d49934d79b10def2439d2b79b7ea0c73c60c98",
+          "md5": "f9892e2a185d2b04b6a36d175f34d230"
+        }
+      ]
+    },
+    {
+      "name": "runtimeElements",
+      "attributes": {
+        "org.gradle.category": "library",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.jvm.version": 17,
+        "org.gradle.libraryelements": "jar",
+        "org.gradle.usage": "java-runtime"
+      },
+      "dependencies": [
+        {
+          "group": "com.vibots5167",
+          "module": "vibotslib-java",
+          "version": {
+            "requires": "2026.1.0"
+          }
+        }
+      ],
+      "files": [
+        {
+          "name": "vibotslib-ctre-java-2026.1.0.jar",
+          "url": "vibotslib-ctre-java-2026.1.0.jar",
+          "size": 1942,
+          "sha512": "46a051f5dbe5dc418ec0767f6fe23ad45cfe26ee1988ee2328a99c7c57a71f9f3ddddc9bff8c3e290879abd46e6e40e81098de730b667dcf9f9b7eb67e689998",
+          "sha256": "6b35553bf181252b55505bd3449ddd9635350a4d8518875b53e238cb7e3de18c",
+          "sha1": "14d49934d79b10def2439d2b79b7ea0c73c60c98",
+          "md5": "f9892e2a185d2b04b6a36d175f34d230"
+        }
+      ]
+    },
+    {
+      "name": "sourcesElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "sources",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "vibotslib-ctre-java-2026.1.0-sources.jar",
+          "url": "vibotslib-ctre-java-2026.1.0-sources.jar",
+          "size": 1718,
+          "sha512": "7bee5b6a262a170e66c6022888da88b3aabf43bd10e46f3b5f2f83a1fc78cf8e432f89ea2ff6cfba1f2753fd2e01b91f2c3981cd437564155f8461fa5d341283",
+          "sha256": "bf2b368808ae5fa289e503d8eedf3ca3e8de95f0a1df39220349e6821beaa79e",
+          "sha1": "7ff820cb75068de2f1c8b029dc35e8ed8c86196a",
+          "md5": "4282a2405cc5d1dc9a92bad4edcf85b4"
+        }
+      ]
+    },
+    {
+      "name": "javadocElements",
+      "attributes": {
+        "org.gradle.category": "documentation",
+        "org.gradle.dependency.bundling": "external",
+        "org.gradle.docstype": "javadoc",
+        "org.gradle.usage": "java-runtime"
+      },
+      "files": [
+        {
+          "name": "vibotslib-ctre-java-2026.1.0-javadoc.jar",
+          "url": "vibotslib-ctre-java-2026.1.0-javadoc.jar",
+          "size": 80522,
+          "sha512": "b27092e06983657e42a3764c1cdda56662e89b9e869f8528396ca5a6e349f4595f41adbf865ac41bc493c9293286fe12502acc913a2a6a42ba3de42d67206255",
+          "sha256": "31ef5f8759116ceefe1cfded5d895db02dc692a884422d27b88ed947755ea5c6",
+          "sha1": "72fc4b74eb62285ba5e137b7674aa9b4368ebd08",
+          "md5": "722dbd8b0f61b8a151752ae8c4c71818"
+        }
+      ]
+    }
+  ]
+}

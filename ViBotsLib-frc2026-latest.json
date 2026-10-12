@@ -1,0 +1,20 @@
+{
+  "fileName": "ViBotsLib.json",
+  "name": "ViBotsLib",
+  "version": "2026.1.0",
+  "uuid": "5a89710d-000a-4402-89cf-6690404725f8",
+  "frcYear": "2026",
+  "mavenUrls": [
+    "https://5167vibots.github.io/ViBotsLib/repo"
+  ],
+  "jsonUrl": "https://5167vibots.github.io/ViBotsLib/ViBotsLib-frc2026-latest.json",
+  "javaDependencies": [
+    {
+      "groupId": "com.vibots5167",
+      "artifactId": "vibotslib-java",
+      "version": "2026.1.0"
+    }
+  ],
+  "jniDependencies": [],
+  "cppDependencies": []
+}
